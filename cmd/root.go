@@ -6,7 +6,7 @@ package cmd
 import (
 	"os"
 
-	"github.com/MarcelArt/le-go/internal/models"
+	"github.com/MarcelArt/stacker/internal/models"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 )
@@ -17,12 +17,11 @@ var network string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "le-go",
-	Short: "CLI docker compose generation tool",
-	Long:  `CLI to quickly generate docker compose configuration for your infrastructure.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
+	Use:   "stacker",
+	Short: "🍔 stacker - Docker Compose stack builder",
+	Long:  `🍔 Stack up your Docker Compose infrastructure one service at a time.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		cmd.Help()
 	},
 }
 
@@ -48,5 +47,5 @@ func init() {
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

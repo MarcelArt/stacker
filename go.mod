@@ -1,4 +1,4 @@
-module github.com/MarcelArt/le-go
+module github.com/MarcelArt/stacker
 
 go 1.26.3
 

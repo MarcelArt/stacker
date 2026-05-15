@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/MarcelArt/le-go/internal/models"
+	"github.com/MarcelArt/stacker/internal/models"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 )
