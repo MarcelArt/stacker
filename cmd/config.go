@@ -24,19 +24,18 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		var defaultNetwork string
+		var stackerConfig models.Config
 
 		i := 0
-		for k := range dockerCompose.Networks {
+		for k, v := range dockerCompose.Networks {
 			if i > 0 {
 				break
 			}
 
-			defaultNetwork = k
+			stackerConfig.Network = k
+			stackerConfig.IsExternalNetwork = v.External
 			i++
 		}
-
-		stackerConfig := models.Config{Network: defaultNetwork}
 
 		stackerTOML, err := toml.Marshal(stackerConfig)
 		if err != nil {

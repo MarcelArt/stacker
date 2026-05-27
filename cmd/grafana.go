@@ -18,19 +18,19 @@ var grafanaCmd = &cobra.Command{
 		dockerCompose.SetNetwork(network, models.Network{
 			Name:     network,
 			Driver:   "bridge",
-			External: false,
+			External: isExternalNetwork,
 		})
 		dockerCompose.SetVolume("loki_data", models.Volume{
 			Name:     "loki_data",
-			External: false,
+			External: isExternalNetwork,
 		})
 		dockerCompose.SetVolume("grafana_data", models.Volume{
 			Name:     "grafana_data",
-			External: false,
+			External: isExternalNetwork,
 		})
 		dockerCompose.SetVolume("prometheus_data", models.Volume{
 			Name:     "prometheus_data",
-			External: false,
+			External: isExternalNetwork,
 		})
 		dockerCompose.SetService("grafana", models.Service{
 			Image:         "grafana/otel-lgtm:latest",

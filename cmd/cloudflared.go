@@ -18,7 +18,7 @@ var cloudflaredCmd = &cobra.Command{
 		dockerCompose.SetNetwork(network, models.Network{
 			Name:     network,
 			Driver:   "bridge",
-			External: false,
+			External: isExternalNetwork,
 		})
 		dockerCompose.SetService("cloudflared", models.Service{
 			Image:         "cloudflare/cloudflared:latest",

@@ -27,7 +27,7 @@ to quickly create a Cobra application.`,
 		dockerCompose.SetNetwork(network, models.Network{
 			Name:     network,
 			Driver:   "bridge",
-			External: false,
+			External: isExternalNetwork,
 		})
 		dockerCompose.SetService("gitea", models.Service{
 			Image:         "docker.gitea.com/gitea:1.26.2",

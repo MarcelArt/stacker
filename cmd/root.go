@@ -15,6 +15,7 @@ import (
 var composeFile string
 var dockerCompose models.Compose
 var network string
+var isExternalNetwork = false
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -52,6 +53,7 @@ func init() {
 	defaultNetwork := "net"
 	if stackerConfig.Network != "" {
 		defaultNetwork = stackerConfig.Network
+		isExternalNetwork = stackerConfig.IsExternalNetwork
 	}
 
 	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.stacker.yaml)")

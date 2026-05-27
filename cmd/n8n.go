@@ -19,11 +19,11 @@ var n8nCmd = &cobra.Command{
 		dockerCompose.SetNetwork(network, models.Network{
 			Name:     network,
 			Driver:   "bridge",
-			External: false,
+			External: isExternalNetwork,
 		})
 		dockerCompose.SetVolume(namedVolume, models.Volume{
 			Name:     namedVolume,
-			External: false,
+			External: isExternalNetwork,
 		})
 		dockerCompose.SetService("n8n", models.Service{
 			Image:         "docker.n8n.io/n8nio/n8n",

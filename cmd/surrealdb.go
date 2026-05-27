@@ -18,7 +18,7 @@ var surrealdbCmd = &cobra.Command{
 		dockerCompose.SetNetwork(network, models.Network{
 			Name:     network,
 			Driver:   "bridge",
-			External: false,
+			External: isExternalNetwork,
 		})
 		dockerCompose.SetService("surrealdb", models.Service{
 			Image:         "surrealdb/surrealdb:latest",

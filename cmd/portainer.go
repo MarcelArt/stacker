@@ -19,11 +19,11 @@ var portainerCmd = &cobra.Command{
 		dockerCompose.SetNetwork(network, models.Network{
 			Name:     network,
 			Driver:   "bridge",
-			External: false,
+			External: isExternalNetwork,
 		})
 		dockerCompose.SetVolume(namedVolume, models.Volume{
 			Name:     namedVolume,
-			External: false,
+			External: isExternalNetwork,
 		})
 		dockerCompose.SetService("portainer", models.Service{
 			Image:         "portainer/portainer-ce:latest",

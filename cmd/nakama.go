@@ -18,7 +18,7 @@ var nakamaCmd = &cobra.Command{
 		dockerCompose.SetNetwork(network, models.Network{
 			Name:     network,
 			Driver:   "bridge",
-			External: false,
+			External: isExternalNetwork,
 		})
 		dockerCompose.SetService("nakama", models.Service{
 			Image:         "registry.heroiclabs.com/heroiclabs/nakama:3.22.0",

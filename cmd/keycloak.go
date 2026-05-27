@@ -18,7 +18,7 @@ var keycloakCmd = &cobra.Command{
 		dockerCompose.SetNetwork(network, models.Network{
 			Name:     network,
 			Driver:   "bridge",
-			External: false,
+			External: isExternalNetwork,
 		})
 		dockerCompose.SetService("keycloak", models.Service{
 			Image:         "quay.io/keycloak/keycloak:latest",
