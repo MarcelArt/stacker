@@ -27,7 +27,7 @@ type Service struct {
 	Volumes       []string          `yaml:"volumes,omitempty"`
 	Ports         []string          `yaml:"ports,omitempty"`
 	Restart       string            `yaml:"restart"`
-	Command       []string          `yaml:"command,omitempty"`
+	Command       string            `yaml:"command,omitempty"`
 	Entrypoint    []string          `yaml:"entrypoint,omitempty"`
 	Expose        []string          `yaml:"expose,omitempty"`
 	Healthcheck   *Healthcheck      `yaml:"healthcheck,omitempty"`

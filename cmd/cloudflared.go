@@ -27,7 +27,7 @@ var cloudflaredCmd = &cobra.Command{
 			Environment: map[string]string{
 				"TUNNEL_TOKEN": "${TUNNEL_TOKEN}",
 			},
-			Command: []string{"tunnel", "run"},
+			Command: "tunnel run",
 			Restart: "unless-stopped",
 		})
 

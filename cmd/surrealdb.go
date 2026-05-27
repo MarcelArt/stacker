@@ -25,7 +25,7 @@ var surrealdbCmd = &cobra.Command{
 			ContainerName: "surrealdb",
 			Networks:      []string{network},
 			Ports:         []string{"8000:8000"},
-			Command:       []string{"start", "--user", "${SURREAL_USER}", "--pass", "${SURREAL_PASS}", "rocksdb:/mydata/surreal.db"},
+			Command:       "start --user ${SURREAL_USER} --pass ${SURREAL_PASS} rocksdb:/mydata/surreal.db",
 			Volumes:       []string{"./surrealdb:/mydata"},
 			User:          "1000:1000",
 			Restart:       "unless-stopped",

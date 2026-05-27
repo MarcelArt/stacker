@@ -38,7 +38,7 @@ var keycloakCmd = &cobra.Command{
 				"KC_PROXY_HEADERS":           "xforwarded",
 				"KC_PROXY_TRUSTED_ADDRESSES": "127.0.0.0/8",
 			},
-			Command:   []string{"start"},
+			Command:   "start",
 			Ports:     []string{"9080:8080", "8443:8443"},
 			DependsOn: []string{"postgres"},
 			Restart:   "unless-stopped",
