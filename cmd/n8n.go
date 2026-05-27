@@ -53,7 +53,7 @@ var n8nCmd = &cobra.Command{
 		}
 
 		fmt.Println("n8n service successfully added to compose file")
-		fmt.Println("This service requires postgres. Run 'le-go postgres' first if you haven't already.")
+		fmt.Println("This service requires postgres. Run 'stacker postgres' first if you haven't already.")
 	},
 }
 

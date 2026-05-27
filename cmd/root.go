@@ -54,7 +54,7 @@ func init() {
 		defaultNetwork = stackerConfig.Network
 	}
 
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.le-go.yaml)")
+	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.stacker.yaml)")
 	rootCmd.PersistentFlags().StringVarP(&composeFile, "file", "f", "docker-compose.yml", "Compose file")
 	rootCmd.PersistentFlags().StringVarP(&network, "network", "n", defaultNetwork, "Network name")
 

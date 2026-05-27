@@ -47,7 +47,7 @@ var openWebUICmd = &cobra.Command{
 		}
 
 		fmt.Println("Open Web UI service successfully added to compose file")
-		fmt.Println("This service requires ollama. Run 'le-go ollama' first if you haven't already.")
+		fmt.Println("This service requires ollama. Run 'stacker ollama' first if you haven't already.")
 	},
 }
 

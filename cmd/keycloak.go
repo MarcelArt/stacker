@@ -53,7 +53,7 @@ var keycloakCmd = &cobra.Command{
 		}
 
 		fmt.Println("Keycloak service successfully added to compose file")
-		fmt.Println("This service requires postgres. Run 'le-go postgres' first if you haven't already.")
+		fmt.Println("This service requires postgres. Run 'stacker postgres' first if you haven't already.")
 		fmt.Println("Add these lines to your .env file:")
 		fmt.Println("KEYCLOAK_ADMIN=<your-keycloak-admin>")
 		fmt.Println("KEYCLOAK_ADMIN_PASSWORD=<your-keycloak-admin-password>")
