@@ -33,6 +33,7 @@ type Service struct {
 	Healthcheck   *Healthcheck      `yaml:"healthcheck,omitempty"`
 	Links         []string          `yaml:"links,omitempty"`
 	DependsOn     []string          `yaml:"depends_on,omitempty"`
+	User          string            `yaml:"user,omitempty"`
 }
 
 type Compose struct {
