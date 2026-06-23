@@ -63,6 +63,10 @@ var n8nCmd = &cobra.Command{
 		}
 
 		fmt.Println("n8n service successfully added to compose file")
+		fmt.Println("Add this line to your .env file:")
+		fmt.Println("N8N_DOMAIN_NAME=<n8n-domain-name>")
+		fmt.Println("N8N_SUBDOMAIN=<n8n-subdomain>")
+		fmt.Println("GENERIC_TIMEZONE=<timezone-Continent/City>")
 		fmt.Println("This service requires postgres. Run 'stacker postgres' first if you haven't already.")
 	},
 }
