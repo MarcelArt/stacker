@@ -34,6 +34,8 @@ type Service struct {
 	Links         []string          `yaml:"links,omitempty"`
 	DependsOn     []string          `yaml:"depends_on,omitempty"`
 	User          string            `yaml:"user,omitempty"`
+	EnvFile       any               `yaml:"env_file,omitempty"`
+	PullPolicy    string            `yaml:"pull_policy,omitempty"`
 }
 
 type Compose struct {
