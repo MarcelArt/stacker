@@ -64,3 +64,7 @@ func (c *Compose) SetService(key string, value Service) {
 	}
 	c.Services[key] = value
 }
+
+func (c *Compose) DeleteService(key string) {
+	delete(c.Services, key)
+}
