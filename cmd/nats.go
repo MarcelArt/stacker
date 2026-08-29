@@ -20,9 +20,14 @@ var natsCmd = &cobra.Command{
 	Short: "Adds nats service",
 	Long:  `Adds nats service to your compose file`,
 	Run: func(cmd *cobra.Command, args []string) {
+		namedVolume := "nats"
 		dockerCompose.SetNetwork(network, models.Network{
 			Name:     network,
 			Driver:   "bridge",
+			External: isExternalNetwork,
+		})
+		dockerCompose.SetVolume(namedVolume, models.Volume{
+			Name:     namedVolume,
 			External: isExternalNetwork,
 		})
 		dockerCompose.SetService("nats", models.Service{
@@ -30,6 +35,8 @@ var natsCmd = &cobra.Command{
 			ContainerName: "nats",
 			Networks:      []string{network},
 			Ports:         []string{"4222:4222", "8222:8222"},
+			Volumes:       []string{fmt.Sprintf("%s:/data", namedVolume)},
+			Command:       "-js -sd /data",
 			Restart:       "unless-stopped",
 		})
 
