@@ -1,6 +1,5 @@
 /*
 Copyright © 2026 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
@@ -36,7 +35,7 @@ var natsCmd = &cobra.Command{
 			Networks:      []string{network},
 			Ports:         []string{"4222:4222", "8222:8222"},
 			Volumes:       []string{fmt.Sprintf("%s:/data", namedVolume)},
-			Command:       "-js -sd /data",
+			Command:       "-js -sd /data -m 8222",
 			Restart:       "unless-stopped",
 		})
 
