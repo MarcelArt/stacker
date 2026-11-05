@@ -1,66 +1,54 @@
-/*
-Copyright © 2026 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
 	"fmt"
-	"log"
 	"os"
+	"sort"
+	"strings"
 
 	"github.com/MarcelArt/stacker/internal/models"
 	"github.com/pelletier/go-toml/v2"
 	"github.com/spf13/cobra"
 )
 
-// configCmd represents the config command
-var configCmd = &cobra.Command{
-	Use:   "config",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		var stackerConfig models.Config
-
-		i := 0
-		for k, v := range dockerCompose.Networks {
-			if i > 0 {
-				break
+func newConfigCommand(opts *options) *cobra.Command {
+	return &cobra.Command{
+		Use:   "config",
+		Short: "Save shared network defaults from the Compose file to stacker.toml",
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			networks := opts.compose.Section("networks")
+			selected := opts.network
+			if _, present := networks[selected]; !present {
+				if cmd.Flags().Changed("network") {
+					return fmt.Errorf("network %q is not defined in %s", selected, opts.file)
+				}
+				if len(networks) != 1 {
+					names := make([]string, 0, len(networks))
+					for name := range networks {
+						names = append(names, name)
+					}
+					sort.Strings(names)
+					return fmt.Errorf("select a defined network with -n (available: %s)", strings.Join(names, ", "))
+				}
+				for name := range networks {
+					selected = name
+				}
 			}
-
-			stackerConfig.Network = k
-			stackerConfig.IsExternalNetwork = v.External
-			i++
-		}
-
-		stackerTOML, err := toml.Marshal(stackerConfig)
-		if err != nil {
-			log.Fatalf("failed to serialize toml: %s", err.Error())
-		}
-
-		if err := os.WriteFile("stacker.toml", stackerTOML, 0644); err != nil {
-			log.Fatalf("failed to write toml: %s", err.Error())
-		}
-
-		fmt.Println("Created stacker.toml file")
-		fmt.Printf("Default configuration imported from %s\n", composeFile)
-	},
-}
-
-func init() {
-	rootCmd.AddCommand(configCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// configCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// configCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+			external := false
+			if definition, ok := networks[selected].(map[string]any); ok {
+				external, _ = definition["external"].(bool)
+			}
+			config := models.Config{Network: selected, IsExternalNetwork: external}
+			data, err := toml.Marshal(config)
+			if err != nil {
+				return err
+			}
+			if err := os.WriteFile("stacker.toml", data, 0644); err != nil {
+				return err
+			}
+			cmd.Printf("Created stacker.toml using network %s from %s\n", selected, opts.file)
+			return nil
+		},
+	}
 }

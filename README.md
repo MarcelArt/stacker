@@ -1,8 +1,6 @@
 # 🍔 stacker
 
-**Stack up your Docker Compose infrastructure one service at a time.**
-
-`stacker` is a Go CLI that builds Docker Compose configs by adding preconfigured services on demand. Instead of maintaining a monolithic compose file, you pick only the services you need and `stacker` generates the YAML with the correct networks, volumes, environment variables, and dependencies.
+Build Docker Compose stacks from reusable YAML service templates.
 
 ## Install
 
@@ -13,84 +11,108 @@ go install github.com/MarcelArt/stacker@latest
 Or build from source:
 
 ```bash
-git clone https://github.com/MarcelArt/stacker.git
-cd stacker
 go build -o stacker .
 ```
 
-## Usage
+## Add services
 
 ```bash
-stacker [command] [flags]
+stacker add postgres
+stacker add n8n
+stacker -f ./deploy/compose.yml -n mynet add cloudflared
 ```
 
-### Global Flags
+All 16 existing services are now bundled YAML templates: `cloudflared`, `gitea`,
+`grafana`, `infisical`, `jenkins`, `keycloak`, `n8n`, `nakama`, `nats`, `ollama`,
+`open-web-ui`, `portainer`, `postgres`, `redis`, `stirling`, and `surrealdb`.
+They work offline. Use `stacker add --help` to see the available names.
 
-| Flag | Short | Default | Description |
-|---|---|---|---|
-| `--file` | `-f` | `docker-compose.yml` | Target compose file |
-| `--network` | `-n` | `net` | Network name shared by all services |
+The old service commands have been replaced: use `stacker add postgres` in place
+of `stacker postgres`.
 
-### Available Services
-
-| Command | Service | Image | Requires |
-|---|---|---|---|
-| `postgres` | PostgreSQL 17 | `postgres:17` | — |
-| `cloudflared` | Cloudflare Tunnel | `cloudflare/cloudflared:latest` | — |
-| `grafana` | Grafana OTel LGTM | `grafana/otel-lgtm:latest` | — |
-| `portainer` | Portainer CE | `portainer/portainer-ce:latest` | — |
-| `ollama` | Ollama LLM | `ollama/ollama:latest` | — |
-| `n8n` | n8n Workflow Automation | `docker.n8n.io/n8nio/n8n` | `postgres` |
-| `keycloak` | Keycloak SSO | `quay.io/keycloak/keycloak:latest` | `postgres` |
-| `nakama` | Nakama Game Server | `registry.heroiclabs.com/heroiclabs/nakama:3.22.0` | `postgres` |
-| `open-web-ui` | Open WebUI | `ghcr.io/open-webui/open-webui:main` | `ollama` |
-
-> 🍔 **Tip:** Run services with dependencies first (e.g. `postgres` before `n8n`). Each command adds one tasty layer to your stack.
-
-### Examples
-
-Build a stack with PostgreSQL and n8n — layer by layer: 🍔
+You can also add a template from an HTTPS URL, including a Gist's **Raw** URL:
 
 ```bash
-stacker postgres
-stacker n8n
+stacker add 'https://gist.githubusercontent.com/USER/ID/raw/REVISION/template.yml'
 ```
 
-Use a custom compose file and network:
+Use the URL to the YAML content rather than the Gist web page. Local template
+paths and HTTP URLs are unsupported. A template can contain several services and
+their networks, volumes, configs, and secrets. Stacker fetches the template and
+writes configuration; setup instructions are printed for the user to follow.
 
-```bash
-stacker -f compose.yml -n mynet postgres
-stacker -f compose.yml -n mynet keycloak
-```
+## Environment setup
 
-### Environment Variables
-
-Services that require secrets read from a `.env` file. After adding a service, `stacker` prints the required variables. Common ones:
+Templates describe the variables their services need. Stacker prints these
+descriptions and appends missing entries with empty values to `.env` beside the
+Compose file:
 
 ```env
-# PostgreSQL
-POSTGRES_USER=<your-pg-user>
-POSTGRES_PASSWORD=<your-pg-password>
-
-# Keycloak
-KEYCLOAK_ADMIN=<your-keycloak-admin>
-KEYCLOAK_ADMIN_PASSWORD=<your-keycloak-admin-password>
-KC_HOSTNAME=<your-keycloak-hostname>
-
-# Cloudflare Tunnel
-TUNNEL_TOKEN=<your-tunnel-token>
+# Cloudflare Tunnel token.
+TUNNEL_TOKEN=
 ```
 
-## How It Works
+Fill in the values before starting the service. Existing entries and values are
+preserved, including when overwriting a service. Stacker does not substitute
+secret values into the Compose file or prompt for them.
 
-Each subcommand reads the existing compose file, adds its service definition (along with any required networks and volumes), and writes the updated YAML back to disk. Services are additive — stack your burger one layer at a time. 🍔
+With `-f ./deploy/compose.yml`, the environment file is `./deploy/.env`. Infisical
+and Redis also use that file through `env_file: .env`.
 
-## Adding a New Service
+Missing service dependencies remain advisory. For example, adding n8n without
+PostgreSQL succeeds and tells you to run `stacker add postgres`. Add the missing
+dependencies before starting the stack.
 
-1. Create `cmd/<service>.go`
-2. Define a Cobra command that calls `dockerCompose.SetNetwork`, `dockerCompose.SetVolume`, and `dockerCompose.SetService`
-3. Marshal with `yaml.Marshal` and write with `os.WriteFile`
-4. Register with `rootCmd.AddCommand` in `init()`
+## Existing configurations
+
+```bash
+stacker add cloudflared --overwrite
+stacker ls
+stacker rm -c cloudflared
+stacker config
+```
+
+An existing service name causes an error unless `--overwrite` is supplied. That
+flag replaces the whole service definition. Identical networks, volumes, configs,
+and secrets are reused; conflicting resource definitions cause an error even
+with `--overwrite`. Invalid YAML or resource conflicts are reported before either
+output file changes.
+
+`add` and `rm` preserve unrelated Compose attributes, including `network_mode`,
+long-form ports, mapped networks and dependencies, and custom extensions. YAML
+formatting and comments may change when the file is rewritten.
+
+## Networks
+
+`-n` selects the shared network, defaulting to `net`. Templates explicitly mark
+which network is shared; their additional networks retain their own definitions.
+
+`stacker config` saves network defaults to `stacker.toml` in the current working
+directory. Use `stacker -n mynet config` to select a particular network when there
+are several. Subsequent additions honor the saved network name and external
+setting; `-n` overrides the name. External shared networks are referenced with
+`external: true` and must already exist before starting containers.
+
+Templates can use `network_mode: host`. Stacker preserves that mode and does not
+attach the service to the shared network. A service cannot combine `network_mode`
+with `networks`, or host mode with published `ports`.
+
+## Create a template
+
+Add a YAML file under [`templates/`](templates/) and rebuild Stacker, or publish it
+at an HTTPS URL. Service definitions use standard Compose YAML; `x-stacker`
+contains descriptions, shared-network metadata, and setup instructions.
+
+See the [template authoring guide](docs/service-templates.md) for the format and a
+host-network example. No per-service Go command is needed.
+
+## Development
+
+```bash
+go test ./...
+go vet ./...
+go build -o stacker .
+```
 
 ## License
 

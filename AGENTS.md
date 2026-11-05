@@ -1,24 +1,19 @@
 # AGENTS.md
 
-## Project
+`stacker` 🍔 builds Docker Compose stacks from bundled or HTTPS YAML service templates.
 
-`stacker` 🍔 — Go CLI that builds Docker Compose configs one service at a time. Built with Cobra + `gopkg.in/yaml.v3`.
+## Validation
 
-## Commands
-
-- `go build -o stacker .` — build binary
-- `go run main.go <subcommand>` — run directly
+- `go test ./...` — CLI, template, merge, environment, and HTTPS regression tests
 - `go vet ./...` — static analysis
-- No tests exist yet
+- `go build -o stacker .` — build binary
 
-## Architecture
+## Architecture and conventions
 
-- `cmd/root.go` — root Cobra command, parses compose file and holds global `dockerCompose` state. Flags: `-f` (compose file, default `docker-compose.yml`), `-n` (network name, default `net`).
-- `cmd/<service>.go` — one file per service subcommand. Each command mutates the shared `dockerCompose` variable then marshals/writes YAML to disk.
-- `internal/models/compose.model.go` — `Compose`, `Network`, `Volume`, `Service`, `Healthcheck` structs with `Set*` helpers that lazily init maps.
+- `cmd/` constructs Cobra commands around per-invocation options; `add` is the service entrypoint.
+- `internal/scaffold/` loads templates, preserves generic Compose mappings, checks conflicts, and stages Compose/environment writes.
+- `templates/*.yml` are embedded built-ins. To add a service or bundle, follow [docs/service-templates.md](docs/service-templates.md); keep service definitions in YAML.
+- `internal/models/config.model.go` represents network defaults in `stacker.toml`.
+- [CONTEXT.md](CONTEXT.md) defines domain terms; [docs/adr/](docs/adr/) records architectural decisions.
 
-Pattern for adding a new service: create `cmd/<service>.go`, define a Cobra command that calls `dockerCompose.SetNetwork`, `SetVolume`, `SetService`, then `yaml.Marshal` + `os.WriteFile`. Register with `rootCmd.AddCommand` in `init()`.
-
-## Known issue
-
-`internal/models/compose.model.go:12` — `Volume.External` tag is `yam` instead of `yaml`, so volume external flag will not serialize correctly.
+Preserve arbitrary Compose fields in add/remove operations. Keep missing dependencies advisory, existing environment entries intact, and new `.env` values empty. Preserve `network_mode` services without attaching a shared network; reject incompatible network and port settings before writing files.

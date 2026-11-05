@@ -1,0 +1,29 @@
+x-stacker:
+  description: grafana service
+  shared_network: shared
+networks:
+  shared:
+    driver: bridge
+volumes:
+  grafana_data:
+    name: grafana_data
+  loki_data:
+    name: loki_data
+  prometheus_data:
+    name: prometheus_data
+services:
+  grafana:
+    image: grafana/otel-lgtm:latest
+    container_name: grafana
+    networks:
+    - shared
+    volumes:
+    - loki_data:/loki
+    - grafana_data:/var/lib/grafana
+    - prometheus_data:/prometheus
+    ports:
+    - 3000:3000
+    - 4317:4317
+    - 4318:4318
+    - 3100:3100
+    restart: unless-stopped

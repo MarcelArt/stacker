@@ -1,0 +1,24 @@
+x-stacker:
+  description: open-web-ui service
+  shared_network: shared
+networks:
+  shared:
+    driver: bridge
+volumes:
+  open-webui:
+    name: open-webui
+services:
+  open-web-ui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-web-ui
+    networks:
+    - shared
+    environment:
+      OLLAMA_BASE_URL: http://ollama:11434
+    volumes:
+    - open-webui:/app/backend/data
+    ports:
+    - 3000:8080
+    restart: unless-stopped
+    depends_on:
+    - ollama

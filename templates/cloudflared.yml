@@ -1,0 +1,19 @@
+x-stacker:
+  description: cloudflared service
+  shared_network: shared
+  environment:
+    TUNNEL_TOKEN:
+      description: Cloudflare Tunnel token.
+networks:
+  shared:
+    driver: bridge
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    networks:
+    - shared
+    environment:
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN}
+    restart: unless-stopped
+    command: tunnel run

@@ -1,0 +1,22 @@
+x-stacker:
+  description: nats service
+  shared_network: shared
+networks:
+  shared:
+    driver: bridge
+volumes:
+  nats:
+    name: nats
+services:
+  nats:
+    image: nats:latest
+    container_name: nats
+    networks:
+    - shared
+    volumes:
+    - nats:/data
+    ports:
+    - 4222:4222
+    - 8222:8222
+    restart: unless-stopped
+    command: -js -sd /data -m 8222

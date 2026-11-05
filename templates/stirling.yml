@@ -1,0 +1,17 @@
+x-stacker:
+  description: stirling service
+  shared_network: shared
+networks:
+  shared:
+    driver: bridge
+services:
+  stirling-pdf:
+    image: stirlingtools/stirling-pdf:latest
+    container_name: stirling-pdf
+    networks:
+    - shared
+    volumes:
+    - ./stirling-data:/configs
+    ports:
+    - 8080:8080
+    restart: unless-stopped

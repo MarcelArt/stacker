@@ -1,0 +1,23 @@
+x-stacker:
+  description: redis service
+  shared_network: shared
+networks:
+  shared:
+    driver: bridge
+volumes:
+  redis_data:
+    name: redis_data
+    driver: local
+services:
+  redis:
+    image: redis
+    container_name: redis
+    networks:
+    - shared
+    environment:
+      ALLOW_EMPTY_PASSWORD: 'yes'
+    volumes:
+    - redis_data:/data
+    restart: always
+    env_file:
+    - .env

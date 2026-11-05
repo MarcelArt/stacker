@@ -1,0 +1,28 @@
+x-stacker:
+  description: postgres service
+  shared_network: shared
+  environment:
+    POSTGRES_PASSWORD:
+      description: PostgreSQL password; use the same value for services sharing PostgreSQL.
+    POSTGRES_USER:
+      description: PostgreSQL username; use the same value for services sharing PostgreSQL.
+networks:
+  shared:
+    driver: bridge
+volumes:
+  postgres_data:
+    name: postgres_data
+services:
+  postgres:
+    image: postgres:17
+    container_name: postgres
+    networks:
+    - shared
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+    volumes:
+    - postgres_data:/var/lib/postgresql/data
+    ports:
+    - 5432:5432
+    restart: unless-stopped

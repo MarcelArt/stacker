@@ -1,0 +1,43 @@
+x-stacker:
+  description: keycloak service
+  shared_network: shared
+  environment:
+    KC_HOSTNAME:
+      description: Public hostname for Keycloak.
+    KEYCLOAK_ADMIN:
+      description: Initial Keycloak administrator username.
+    KEYCLOAK_ADMIN_PASSWORD:
+      description: Initial Keycloak administrator password.
+    POSTGRES_PASSWORD:
+      description: PostgreSQL password; use the same value for services sharing PostgreSQL.
+    POSTGRES_USER:
+      description: PostgreSQL username; use the same value for services sharing PostgreSQL.
+networks:
+  shared:
+    driver: bridge
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
+    networks:
+    - shared
+    environment:
+      KC_DB: postgres
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USERNAME: ${POSTGRES_USER}
+      KC_HOSTNAME: ${KC_HOSTNAME}
+      KC_HOSTNAME_STRICT: 'false'
+      KC_HOSTNAME_STRICT_HTTPS: 'true'
+      KC_HTTP_ENABLED: 'true'
+      KC_PROXY_HEADERS: xforwarded
+      KC_PROXY_TRUSTED_ADDRESSES: 127.0.0.0/8
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+    ports:
+    - 9080:8080
+    - 8443:8443
+    restart: unless-stopped
+    command: start
+    depends_on:
+    - postgres

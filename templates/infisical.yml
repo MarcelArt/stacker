@@ -1,0 +1,36 @@
+x-stacker:
+  description: infisical service
+  shared_network: shared
+  instructions:
+  - Create the Infisical database in PostgreSQL before starting. Configure DB_CONNECTION_URI for that database on
+    the postgres service. See https://infisical.com/docs/self-hosting/configuration/envars for additional configuration.
+  environment:
+    ENCRYPTION_KEY:
+      description: Infisical encryption key; generate a unique key before starting.
+    AUTH_SECRET:
+      description: Infisical authentication signing secret; generate a unique secret.
+    DB_CONNECTION_URI:
+      description: Infisical PostgreSQL URI, using the postgres service hostname and your database credentials.
+    REDIS_URL:
+      description: Infisical Redis URL, for example redis://redis:6379.
+    SITE_URL:
+      description: Public URL of your Infisical instance.
+networks:
+  shared:
+    driver: bridge
+services:
+  infisical:
+    image: infisical/infisical:latest
+    container_name: infisical
+    networks:
+    - shared
+    environment:
+      NODE_ENV: production
+    ports:
+    - 80:8080
+    restart: unless-stopped
+    depends_on:
+    - postgres
+    - redis
+    env_file: .env
+    pull_policy: always

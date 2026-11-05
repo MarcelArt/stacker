@@ -1,60 +1,34 @@
-/*
-Copyright © 2026 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
 	"fmt"
-	"log"
-	"os"
 
+	"github.com/MarcelArt/stacker/internal/scaffold"
 	"github.com/spf13/cobra"
-	"gopkg.in/yaml.v3"
 )
 
-var container string
-
-// rmCmd represents the rm command
-var rmCmd = &cobra.Command{
-	Use:   "rm",
-	Short: "Remove a service from the compose file",
-	Long: `Remove a service from the compose file.
-
-Deletes the service specified by the --container flag and writes the
-updated configuration back to the compose file.
-
-Example:
-  stacker rm -c postgres`,
-	Run: func(cmd *cobra.Command, args []string) {
-		if container == "" {
-			fmt.Println("Please provide container name by using --container or -c flag, example: stacker rm -c postgres")
-			os.Exit(1)
-			return
-		}
-
-		dockerCompose.DeleteService(container)
-
-		yml, err := yaml.Marshal(dockerCompose)
-		if err != nil {
-			log.Fatalf("failed serialize to yml: %v", err.Error())
-		}
-		if err := os.WriteFile(composeFile, yml, 0644); err != nil {
-			log.Fatalf("failed writing compose file: %v", err.Error())
-		}
-		fmt.Printf("%s service removed", container)
-	},
-}
-
-func init() {
-	rootCmd.AddCommand(rmCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// rmCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	rmCmd.Flags().StringVarP(&container, "container", "c", "", "container name to remove")
+func newRemoveCommand(opts *options) *cobra.Command {
+	var container string
+	cmd := &cobra.Command{
+		Use:   "rm -c <service>",
+		Short: "Remove a service while preserving unrelated Compose fields",
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if container == "" {
+				return fmt.Errorf("provide a service name with --container or -c")
+			}
+			services := opts.compose.Section("services")
+			if _, present := services[container]; !present {
+				return fmt.Errorf("service %q does not exist", container)
+			}
+			delete(services, container)
+			if err := scaffold.WriteCompose(opts.file, opts.compose); err != nil {
+				return err
+			}
+			cmd.Printf("%s service removed\n", container)
+			return nil
+		},
+	}
+	cmd.Flags().StringVarP(&container, "container", "c", "", "Service name to remove")
+	return cmd
 }

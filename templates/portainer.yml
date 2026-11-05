@@ -1,0 +1,19 @@
+x-stacker:
+  description: portainer service
+  shared_network: shared
+networks:
+  shared:
+    driver: bridge
+volumes:
+  portainer_data:
+    name: portainer_data
+services:
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    networks:
+    - shared
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    - portainer_data:/data
+    restart: unless-stopped
