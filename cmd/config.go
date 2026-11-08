@@ -6,7 +6,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/MarcelArt/stacker/internal/models"
+	"github.com/MarcelArt/stacker/v2/internal/models"
 	"github.com/pelletier/go-toml/v2"
 	"github.com/spf13/cobra"
 )

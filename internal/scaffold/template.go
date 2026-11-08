@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/MarcelArt/stacker/templates"
+	"github.com/MarcelArt/stacker/v2/templates"
 	"gopkg.in/yaml.v3"
 )
 

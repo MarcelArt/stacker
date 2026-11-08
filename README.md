@@ -5,7 +5,7 @@ Build Docker Compose stacks from reusable YAML service templates.
 ## Install
 
 ```bash
-go install github.com/MarcelArt/stacker@latest
+go install github.com/MarcelArt/stacker/v2@latest
 ```
 
 Or build from source:

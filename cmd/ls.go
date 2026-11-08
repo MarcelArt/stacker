@@ -5,7 +5,7 @@ import (
 	"sort"
 	"text/tabwriter"
 
-	"github.com/MarcelArt/stacker/internal/scaffold"
+	"github.com/MarcelArt/stacker/v2/internal/scaffold"
 	"github.com/spf13/cobra"
 )
 

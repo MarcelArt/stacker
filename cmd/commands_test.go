@@ -14,7 +14,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/MarcelArt/stacker/internal/scaffold"
+	"github.com/MarcelArt/stacker/v2/internal/scaffold"
 )
 
 func runCommand(args ...string) (string, error) {
