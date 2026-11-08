@@ -1,4 +1,4 @@
-module github.com/MarcelArt/stacker
+module github.com/MarcelArt/stacker/v2
 
 go 1.26.3
 
