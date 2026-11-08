@@ -1,0 +1,37 @@
+x-stacker:
+  description: Kimeru self-hosted playground for structured decision AI.
+  shared_network: shared
+  environment:
+    KIMERU_APP_ORIGIN:
+      description: Exact browser URL, including scheme and external port; defaults to http://localhost:3000 when empty.
+    KIMERU_SECURE_COOKIES:
+      description: Set true when serving over HTTPS; defaults to false when empty.
+  instructions:
+    - Open http://localhost:3000 (or your configured origin) and create the first administrator account with a password of at least 12 characters before exposing the instance publicly.
+    - Add provider URLs and API keys under Connections in Kimeru; no provider credentials are needed in the Compose file.
+    - To change the local port, edit the host side of 127.0.0.1:3000:3000 and set KIMERU_APP_ORIGIN to the matching browser URL; keep the container port at 3000.
+    - For HTTPS, route your reverse proxy to kimeru:3000 on the shared network and set KIMERU_APP_ORIGIN to your HTTPS URL and KIMERU_SECURE_COOKIES to true.
+    - Back up the entire kimeru-data volume with the service stopped; it contains the SQLite database, uploaded images, and generated encryption key. Removing the volume deletes this data.
+    - The published image uses linux/amd64; ARM hosts need amd64 emulation or a locally built image with the platform setting adjusted.
+networks:
+  shared:
+    driver: bridge
+volumes:
+  kimeru-data:
+    name: kimeru-data
+services:
+  kimeru:
+    image: marcelaritonang/kimeru:latest
+    platform: linux/amd64
+    container_name: kimeru
+    networks:
+    - shared
+    environment:
+      KIMERU_DATA_DIR: /app/data
+      KIMERU_APP_ORIGIN: ${KIMERU_APP_ORIGIN:-http://localhost:3000}
+      KIMERU_SECURE_COOKIES: ${KIMERU_SECURE_COOKIES:-false}
+    volumes:
+    - kimeru-data:/app/data
+    ports:
+    - "127.0.0.1:3000:3000"
+    restart: unless-stopped

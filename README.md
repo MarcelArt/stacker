@@ -22,8 +22,8 @@ stacker add n8n
 stacker -f ./deploy/compose.yml -n mynet add cloudflared
 ```
 
-All 16 existing services are now bundled YAML templates: `cloudflared`, `gitea`,
-`grafana`, `infisical`, `jenkins`, `keycloak`, `n8n`, `nakama`, `nats`, `ollama`,
+The 17 bundled YAML templates are: `cloudflared`, `gitea`,
+`grafana`, `infisical`, `jenkins`, `keycloak`, `kimeru`, `n8n`, `nakama`, `nats`, `ollama`,
 `open-web-ui`, `portainer`, `postgres`, `redis`, `stirling`, and `surrealdb`.
 They work offline. Use `stacker add --help` to see the available names.
 

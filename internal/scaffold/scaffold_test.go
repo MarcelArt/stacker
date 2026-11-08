@@ -22,8 +22,8 @@ func mustTemplate(t *testing.T, source string) *Template {
 }
 
 func TestBuiltinsAssembleWithCompleteEnvironmentMetadata(t *testing.T) {
-	if len(Builtins()) != 16 {
-		t.Fatalf("expected all 16 migrated services, got %v", Builtins())
+	if len(Builtins()) != 17 {
+		t.Fatalf("expected all 17 built-in templates, got %v", Builtins())
 	}
 	doc := Document{}
 	for _, name := range Builtins() {
@@ -39,7 +39,7 @@ func TestBuiltinsAssembleWithCompleteEnvironmentMetadata(t *testing.T) {
 			t.Fatalf("%s: %v", name, err)
 		}
 	}
-	if len(doc.Section("services")) != 16 {
+	if len(doc.Section("services")) != 17 {
 		t.Fatalf("unexpected services: %v", doc.Section("services"))
 	}
 	if missing := MissingDependencies(doc, doc); len(missing) != 0 {
